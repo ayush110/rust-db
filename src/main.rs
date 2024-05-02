@@ -1,7 +1,4 @@
-extern crate clap;
-#[macro_use]
-extern crate prettytable;
-
+// Initalize modules so we can use functions, types, constants in scope
 mod error;
 mod meta_command;
 mod repl;
@@ -15,16 +12,13 @@ use sql::process_command;
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
 
-use clap::{crate_authors, crate_description, crate_name, crate_version, Command};
+#[macro_use]
+extern crate prettytable;
+
+use clap::{crate_name, crate_version};
 
 fn main() -> rustyline::Result<()> {
     env_logger::init();
-
-    let _matches = Command::new(crate_name!())
-        .version(crate_version!())
-        .author(crate_authors!())
-        .about(crate_description!())
-        .get_matches();
 
     // Starting Rustyline with a default configuration
     let config = get_config();
@@ -54,12 +48,13 @@ fn main() -> rustyline::Result<()> {
         "Use '.open FILENAME' to reopen on a persistent database."
     );
 
-    let mut db = Database::new("tempdb".to_string());
+    // Creates new database with name and empty hashmap of tables
+    let mut db = Database::new("mydb".to_string());
 
     loop {
-        let p = format!("sqlrite> ");
+        let p = format!("rustdb> ");
         repl.helper_mut().expect("No helper found").colored_prompt =
-            format!("\x1b[1;32m{}\x1b[0m", p);
+            format!("\x1b[1;34m{}\x1b[0m", p);
         // Source for ANSI Color information: http://www.perpetualpc.net/6429_colors.html#color_list
         // http://bixense.com/clicolors/
 

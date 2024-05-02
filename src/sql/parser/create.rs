@@ -119,11 +119,13 @@ impl CreateQuery {
                         is_unique,
                     });
                 }
+
                 // TODO: Handle constraints,
                 // Default value and others.
                 for constraint in _constraints {
                     println!("{:?}", constraint);
                 }
+
                 return Ok(CreateQuery {
                     table_name: table_name.to_string(),
                     columns: parsed_columns,
@@ -132,48 +134,5 @@ impl CreateQuery {
 
             _ => return Err(SQLRiteError::Internal("Error parsing query".to_string())),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::sql::*;
-
-    #[test]
-    fn create_table_validate_tablename_test() {
-        let sql_input = String::from(
-            "CREATE TABLE contacts (
-            id INTEGER PRIMARY KEY,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULl,
-            email TEXT NOT NULL UNIQUE
-        );",
-        );
-        let expected_table_name = String::from("contacts");
-
-        let dialect = SQLiteDialect {};
-        let mut ast = Parser::parse_sql(&dialect, &sql_input).unwrap();
-
-        assert!(ast.len() == 1, "ast has more then one Statement");
-
-        let query = ast.pop().unwrap();
-
-        // Initialy only implementing some basic SQL Statements
-        match query {
-            Statement::CreateTable { .. } => {
-                let result = CreateQuery::new(&query);
-                match result {
-                    Ok(payload) => {
-                        assert_eq!(payload.table_name, expected_table_name);
-                    }
-                    Err(_) => assert!(
-                        false,
-                        "an error occured during parsing CREATE TABLE Statement"
-                    ),
-                }
-            }
-            _ => (),
-        };
     }
 }

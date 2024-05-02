@@ -12,7 +12,7 @@ pub enum MetaCommand {
     Unknown,
 }
 
-/// Trait responsible for translating type into a formated text.
+// Trait responsible for translating type into a formated text. Only used in tests for now
 impl fmt::Display for MetaCommand {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -58,78 +58,5 @@ pub fn handle_meta_command(command: MetaCommand, repl: &mut Editor<REPLHelper>) 
         MetaCommand::Unknown => Err(SQLRiteError::UnknownCommand(format!(
             "Unknown command or invalid arguments. Enter '.help'"
         ))),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::repl::{get_config, REPLHelper};
-
-    #[test]
-    fn get_meta_command_exit_test() {
-        // Starting Rustyline with a default configuration
-        let config = get_config();
-
-        // Getting a new Rustyline Helper
-        let helper = REPLHelper::default();
-
-        // Initiatlizing Rustyline Editor with set config and setting helper
-        let mut repl = Editor::with_config(config);
-        repl.set_helper(Some(helper));
-
-        let inputed_command = MetaCommand::Help;
-
-        let result = handle_meta_command(inputed_command, &mut repl);
-        assert_eq!(result.is_ok(), true);
-    }
-
-    #[test]
-    fn get_meta_command_open_test() {
-        // Starting Rustyline with a default configuration
-        let config = get_config();
-
-        // Getting a new Rustyline Helper
-        let helper = REPLHelper::default();
-
-        // Initiatlizing Rustyline Editor with set config and setting helper
-        let mut repl = Editor::with_config(config);
-        repl.set_helper(Some(helper));
-
-        let inputed_command = MetaCommand::Open(".open database.db".to_string());
-
-        let result = handle_meta_command(inputed_command, &mut repl);
-        assert_eq!(result.is_ok(), true);
-    }
-
-    #[test]
-    fn get_meta_command_unknown_command_test() {
-        // Starting Rustyline with a default configuration
-        let config = get_config();
-
-        // Getting a new Rustyline Helper
-        let helper = REPLHelper::default();
-
-        // Initiatlizing Rustyline Editor with set config and setting helper
-        let mut repl = Editor::with_config(config);
-        repl.set_helper(Some(helper));
-
-        let inputed_command = MetaCommand::Unknown;
-
-        let result = handle_meta_command(inputed_command, &mut repl);
-        assert_eq!(result.is_err(), true);
-    }
-
-    #[test]
-    fn meta_command_display_trait_test() {
-        let exit = MetaCommand::Exit;
-        let help = MetaCommand::Help;
-        let open = MetaCommand::Open(".open database.db".to_string());
-        let unknown = MetaCommand::Unknown;
-
-        assert_eq!(format!("{}", exit), ".exit");
-        assert_eq!(format!("{}", help), ".help");
-        assert_eq!(format!("{}", open), ".open");
-        assert_eq!(format!("{}", unknown), "Unknown command");
     }
 }

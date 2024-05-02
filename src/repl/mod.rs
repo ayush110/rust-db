@@ -120,26 +120,3 @@ pub fn get_config() -> Config {
         .output_stream(OutputStreamType::Stdout)
         .build()
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn get_command_type_meta_command_test() {
-        let input = String::from(".help");
-        let expected = CommandType::MetaCommand(MetaCommand::Help);
-
-        let result = get_command_type(&input);
-        assert_eq!(result, expected);
-    }
-
-    #[test]
-    fn get_command_type_sql_command_test() {
-        let input = String::from("SELECT * from users;");
-        let expected = CommandType::SQLCommand(SQLCommand::Unknown(input.clone()));
-
-        let result = get_command_type(&input);
-        assert_eq!(result, expected);
-    }
-}

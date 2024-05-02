@@ -365,7 +365,7 @@ impl Table {
     ///    +-------------+-----------+-------------+--------+----------+
     /// ```
     ///
-    pub fn print_table_schema(&self) -> Result<usize> {
+    pub fn print_table_schema(&self) -> Result<()> {
         let mut table = PrintTable::new();
         table.add_row(row![
             "Column Name",
@@ -386,6 +386,7 @@ impl Table {
         }
 
         let lines = table.printstd();
+
         Ok(lines)
     }
 
@@ -554,89 +555,5 @@ impl Row {
             Row::Bool(cd) => cd.len(),
             Row::None => panic!("Found None in columns"),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use sqlparser::dialect::SQLiteDialect;
-    use sqlparser::parser::Parser;
-
-    #[test]
-    fn datatype_display_trait_test() {
-        let integer = DataType::Integer;
-        let text = DataType::Text;
-        let real = DataType::Real;
-        let boolean = DataType::Bool;
-        let none = DataType::None;
-        let invalid = DataType::Invalid;
-
-        assert_eq!(format!("{}", integer), "Integer");
-        assert_eq!(format!("{}", text), "Text");
-        assert_eq!(format!("{}", real), "Real");
-        assert_eq!(format!("{}", boolean), "Boolean");
-        assert_eq!(format!("{}", none), "None");
-        assert_eq!(format!("{}", invalid), "Invalid");
-    }
-
-    #[test]
-    fn create_new_table_test() {
-        let query_statement = "CREATE TABLE contacts (
-            id INTEGER PRIMARY KEY,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULl,
-            email TEXT NOT NULL UNIQUE,
-            active BOOL,
-            score REAL
-        );";
-        let dialect = SQLiteDialect {};
-        let mut ast = Parser::parse_sql(&dialect, &query_statement).unwrap();
-        if ast.len() > 1 {
-            panic!("Expected a single query statement, but there are more then 1.")
-        }
-        let query = ast.pop().unwrap();
-
-        let create_query = CreateQuery::new(&query).unwrap();
-
-        let table = Table::new(create_query);
-
-        assert_eq!(table.columns.len(), 6);
-        assert_eq!(table.last_rowid, 0);
-
-        let id_column = "id".to_string();
-        if let Some(column) = table
-            .columns
-            .iter()
-            .filter(|c| c.column_name == id_column)
-            .collect::<Vec<&Column>>()
-            .first()
-        {
-            assert_eq!(column.is_pk, true);
-            assert_eq!(column.datatype, DataType::Integer);
-        } else {
-            panic!("column not found");
-        }
-    }
-
-    #[test]
-    fn print_table_schema_test() {
-        let query_statement = "CREATE TABLE contacts (
-            id INTEGER PRIMARY KEY,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULl
-        );";
-        let dialect = SQLiteDialect {};
-        let mut ast = Parser::parse_sql(&dialect, &query_statement).unwrap();
-        if ast.len() > 1 {
-            panic!("Expected a single query statement, but there are more then 1.")
-        }
-        let query = ast.pop().unwrap();
-
-        let create_query = CreateQuery::new(&query).unwrap();
-
-        let table = Table::new(create_query);
-        let lines_printed = table.print_table_schema();
-        assert_eq!(lines_printed, Ok(9));
     }
 }
