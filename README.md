@@ -13,13 +13,13 @@ A simple database written from scratch in Rust. It mimicks SQLite features.
 
 ### Project Progress
 
-- [ ] REPL interface using Rustyline library
-- [ ] Supports `.help`, `.exit` meta commands
-- [ ] Parses SQLite SQL dialect to generate AST (Abstract Syntax Tree)
-- [ ] Supports `CREATE TABLE`, `INSERT`, `SELECT`
-  - [ ] Simple select queries - only single where clause and no joins
-- [ ] Standard error handling and validation structure
-- [ ] In memory BTreeMap indexes (only for primary keys)
+- [X] REPL interface using Rustyline library
+- [X] Supports `.help`, `.exit` meta commands
+- [X] Parses SQLite SQL dialect to generate AST (Abstract Syntax Tree)
+- [X] Supports `CREATE TABLE`, `INSERT`, `SELECT`
+  - [X] Simple select queries - only single where clause and no joins
+- [X] Standard error handling and validation structure
+- [X] In memory BTreeMap indexes (only for primary keys)
 - [ ] Serialization | Deserialization to and from binary encodings
 - [ ] Add persistence storage on disk to load db from `.open` command
 - [ ] Implement pager
